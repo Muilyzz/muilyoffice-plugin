@@ -1,0 +1,21 @@
+/* 조직도. report.css 위에 가로 A4와 나무 모양 선만 덧붙인다. */
+@page { size: A4 landscape; }
+.org { margin: 6mm 0 2mm; font-family: "Noto Sans CJK KR", sans-serif; }
+.branch { display: flex; flex-direction: column; align-items: center; flex: 1 1 0; position: relative; }
+.kids { display: flex; justify-content: center; align-items: flex-start; width: 100%; position: relative; padding-top: 5mm; }
+.kids::before { content: ""; position: absolute; top: 0; left: 50%; height: 5mm; border-left: 0.8pt solid #000; }
+.kids > .branch { padding: 5mm 1mm 0; }
+.kids > .branch::before { content: ""; position: absolute; top: 0; left: 0; right: 0; border-top: 0.8pt solid #000; }
+.kids > .branch:first-child::before { left: 50%; }
+.kids > .branch:last-child::before { right: 50%; }
+.kids > .branch:only-child::before { content: none; }
+.kids > .branch::after { content: ""; position: absolute; top: 0; left: 50%; height: 5mm; border-left: 0.8pt solid #000; }
+.node { border: 0.8pt solid #000; background: #fff; padding: 1.5mm 2mm; text-align: center; min-width: 30mm; max-width: 44mm; line-height: 1.3; }
+.node.human { border: 2.4pt double #000; }
+.node .nm { font-size: 11.5pt; font-weight: 700; }
+.node .rl { font-size: 9pt; font-weight: 400; margin-top: 0.6mm; }
+.node .tm { font-size: 8.5pt; font-weight: 500; color: rgba(0,0,0,0.65); margin-top: 0.6mm; }
+.org + p.note { margin-top: 5mm; }
+h2.list { margin-top: 8mm; }
+table.g.members th { white-space: nowrap; }
+table.g.members td { font-size: 9.5pt; }

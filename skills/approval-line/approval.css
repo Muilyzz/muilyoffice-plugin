@@ -1,0 +1,21 @@
+/* 결재란 도장 칸. report.css의 table.sign 위에 덧붙인다. */
+table.sign th { font-family: "Noto Sans CJK KR", sans-serif; font-weight: 700; }
+table.sign td { position: relative; vertical-align: middle; }
+table.sign.line td { height: 21mm; }
+table.sign.line td:not(.side) { min-width: 25mm; }
+table.sign .mark { font-weight: 700; letter-spacing: 0.12em; }
+table.sign .who { font-weight: 700; margin-top: 0.8mm; }
+table.sign .when, table.sign .act, table.sign .note { font-size: 10pt; font-weight: 500; white-space: nowrap; }
+table.sign td.turn { box-shadow: inset 0 0 0 1.6pt #000; }
+table.sign td.slash svg {
+  position: absolute; left: 0; top: 0; width: 100%; height: 100%;
+}
+/* warning_html(): 세 서식이 같은 칸을 쓴다. */
+.warnings {
+  border: 1.2pt solid #000; padding: 2mm 3mm; margin: 3mm 0;
+  font-family: "Noto Sans CJK KR", sans-serif; font-size: 9.5pt; line-height: 1.5;
+}
+.warnings .wcap { font-weight: 700; letter-spacing: 0.3em; }
+.warnings ul { margin: 1mm 0 0; padding-left: 5mm; }
+/* sign_table(): 취합 기록은 결재란 밖, 표 아래에 적는다. */
+.signwrap .collect { font-family: "Noto Sans CJK KR", sans-serif; font-size: 10pt; text-align: right; margin-top: 1mm; }

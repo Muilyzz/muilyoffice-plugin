@@ -1,0 +1,28 @@
+{
+  "form": "proposal",
+  "version": 1,
+  "title": "회의실 예약 방식 변경",
+  "verdict": "ok",
+  "approval": {
+    "steps": [
+      {"role": "기안", "title": "담당", "name": "홍길동", "date": "2026-10-31"},
+      {"role": "결재", "title": "최종 결재자", "name": "김가상"}
+    ]
+  },
+  "sections": [
+    {
+      "title": "추진 개요",
+      "items": [
+        "전결 없이 마지막 칸의 최종 결재자가 직접 승인하고 main에 머지한 경우의 결재란 예시임",
+        "마지막 칸에 승인과 머지 날짜를 찍음"
+      ]
+    }
+  ],
+  "sampleReviews": [
+    {"name": "김가상", "verdict": "approve", "submittedAt": "2026-11-01T02:00:00Z"}
+  ],
+  "sampleMerge": {
+    "mergedAt": "2026-11-01T04:00:00Z",
+    "mergedBy": {"displayName": "김가상"}
+  }
+}

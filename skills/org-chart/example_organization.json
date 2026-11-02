@@ -1,0 +1,77 @@
+{
+  "members": [
+    {
+      "id": "head",
+      "name": "책임자A",
+      "kind": "human",
+      "team": null,
+      "role": "가상 예시 역할",
+      "reports_to": null,
+      "approver": null,
+      "delegation": null,
+      "spec": null,
+      "note": "가상 조직(예시 회사), 실제 조직 아님"
+    },
+    {
+      "id": "lead-a",
+      "name": "결재자A",
+      "kind": "human",
+      "team": "A팀",
+      "role": "가상 예시 역할",
+      "reports_to": "head",
+      "approver": "head",
+      "delegation": null,
+      "spec": null
+    },
+    {
+      "id": "lead-b",
+      "name": "결재자B",
+      "kind": "human",
+      "team": "B팀",
+      "role": "가상 예시 역할",
+      "reports_to": "head",
+      "approver": "head",
+      "delegation": null,
+      "spec": null
+    },
+    {
+      "id": "staff-a",
+      "name": "담당자A",
+      "kind": "bot",
+      "team": "A팀",
+      "role": "가상 예시 역할",
+      "reports_to": "lead-a",
+      "approver": "lead-a",
+      "assignment": "deliverable",
+      "delegation": null,
+      "spec": null
+    },
+    {
+      "id": "staff-b",
+      "name": "담당자B",
+      "kind": "bot",
+      "team": "B팀",
+      "role": "가상 예시 역할",
+      "reports_to": "lead-b",
+      "approver": "lead-b",
+      "assignment": "common",
+      "delegation": null,
+      "spec": null,
+      "pending": true,
+      "note": "▲ 잠정값: team"
+    },
+    {
+      "id": "staff-c",
+      "name": "담당자C",
+      "kind": "bot",
+      "team": null,
+      "role": "가상 예시 역할",
+      "reports_to": null,
+      "approver": null,
+      "delegation": null,
+      "spec": null,
+      "pending": true,
+      "note": "▲ 미정: reports_to, approver"
+    }
+  ]
+}

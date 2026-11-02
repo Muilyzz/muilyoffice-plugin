@@ -1,0 +1,11 @@
+{
+  "name": "muilyoffice-korean-groupware-documents",
+  "displayName": "Korean groupware documents",
+  "version": "0.1.0",
+  "description": "Monochrome Korean groupware documents for print: reports, leave requests, proposals, and org charts, with an approval line read from Origin pull request reviews.",
+  "author": {
+    "name": "Muilyzz Corp."
+  },
+  "license": "MIT",
+  "keywords": ["korean", "report", "documents", "pdf", "leave", "approval"]
+}

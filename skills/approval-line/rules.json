@@ -1,0 +1,60 @@
+{
+  "source": "operating-rules-config.json",
+  "basis": "이 파일은 결재 규칙 값의 사본입니다. 원본은 source가 가리키는 파일입니다. 값을 바꿀 때는 원본을 먼저 고치고, 이 사본을 원본에 맞춘 뒤 python3 -m pytest tests로 확인합니다. 이 파일만 고치지 않습니다. 키마다 원본 위치는 원본의 copies[\"skills/approval-line/rules.json\"].map에 있고, tests/test_rules_sync.py가 map을 따라 값을 비교해 다르면 실패합니다. map에 없는 값은 이 사본에 두지 않습니다. 원본의 line.firstIsDraft, line.maxSteps, onViolation, forms.proposal.reviewAllowed, jeongyeol.afterBoxes는 map에 없어 approval.py와 render_proposal.py 코드에 있고, 같은 테스트가 원본 값이 코드가 따르는 값과 같은지 확인합니다. 판정(✔/▲/✖)은 결재 규칙이 아니므로 여기 두지 않고 skills/report-format/template/make_report.py VERDICTS에 둡니다.",
+  "roles": {
+    "draft": "기안",
+    "review": "검토",
+    "final": "결재"
+  },
+  "line": {
+    "maxReviews": 1,
+    "lastIsFinal": true
+  },
+  "marks": ["전결", "대결"],
+  "reviewResults": {
+    "approve": "승인",
+    "request_changes": "반려"
+  },
+  "approvalStatus": {
+    "in-progress": "진행",
+    "rejected": "반려",
+    "approved": "승인",
+    "needs-check": "확인 필요"
+  },
+  "docNumber": {
+    "kinds": {
+      "proposal": "품의",
+      "report": "보고"
+    },
+    "unassigned": "미부여"
+  },
+  "mergeNote": {
+    "pending": "merge 대기",
+    "merged": "{month}/{day} merge",
+    "merger": "머지: {who} {month}/{day}",
+    "mergerUnknown": "미확인",
+    "jeongyeolWho": "{name}({mark})"
+  },
+  "warnings": {
+    "draft": "▲ 초안, 최종 결재자(조직도 최상위) 확정 전 (최종 결재자 결정 B2는 구조 경고면 승인 대신 needs-check를 표시하고 경고를 문서에 찍는 것까지. 단어·structural·simple·text는 초안)",
+    "structural": [
+      "lastNotFinal",
+      "noFinal",
+      "jeongyeolOnReview",
+      "drafterInOtherBox",
+      "samePersonInTwoBoxes",
+      "drafterReview",
+      "orderInversion"
+    ],
+    "simple": ["dateOnNonDraft"],
+    "text": {
+      "noFinal": "결재 칸이 없습니다. 규칙은 마지막 칸이 결재입니다.",
+      "jeongyeolOnReview": "검토 칸({name})에 전결 표시가 있습니다. 규칙은 결재 칸에만 전결을 적습니다. 이 표시로 사선을 긋지 않습니다.",
+      "jeongyeolCount": "결재 칸의 전결이 {count}칸입니다. 규칙은 1칸입니다. 첫 전결 칸({name}) 오른쪽에 사선을 긋습니다.",
+      "drafterInOtherBox": "기안자({name})가 {box} 칸에도 있습니다. 규칙은 기안자를 다른 칸에 두지 않습니다.",
+      "samePersonInTwoBoxes": "{name}이(가) {count}칸에 있습니다. 규칙은 한 사람을 한 칸에만 둡니다.",
+      "drafterReview": "기안자({name})의 리뷰는 결재란에 찍지 않았습니다. 규칙은 기안자가 승인·반려하지 않습니다.",
+      "orderInversion": "{later} 칸 승인({laterDate})이 앞 {earlier} 칸 승인({earlierDate})보다 이릅니다. 규칙은 앞 칸부터 승인합니다. 도장은 그대로 찍습니다."
+    }
+  }
+}

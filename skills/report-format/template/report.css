@@ -1,0 +1,89 @@
+/* 관공서 보고서 typography · monochrome (black + alpha gray only) · A4 */
+/* Families: Noto Sans CJK KR (제목·표·요약·결재·주석), Noto Serif CJK KR (본문 ○/-), Gothic A1 (✔ ✖ only) */
+@page { size: A4; margin: 15mm 20mm 15mm 20mm;
+  @top-right { content: "@@HEADER@@"; font-family: "Noto Sans CJK KR"; font-weight: 500; font-size: 10pt; color: rgba(0,0,0,0.55); }
+  @bottom-center { content: "- " counter(page) " / " counter(pages) " -"; font-family: "Noto Sans CJK KR"; font-weight: 400; font-size: 10pt; color: rgba(0,0,0,0.7); } }
+* { box-sizing: border-box; }
+body { margin: 0; color: #000; font-family: "Noto Serif CJK KR", serif; font-weight: 400; font-size: 13pt; line-height: 1.6; word-break: keep-all; overflow-wrap: break-word; }
+b, strong { font-weight: 700; }
+a { color: #000; text-decoration: underline; text-underline-offset: 0.6mm; }
+code { font-family: "Noto Sans CJK KR", sans-serif; font-size: 0.92em; font-weight: 500; }
+.sans, .kind, h1, h2, h3, table, .summary, .note, .legend, .btn, .cap, .meta { font-family: "Noto Sans CJK KR", sans-serif; }
+.mk { font-family: "Gothic A1", "Noto Sans CJK KR", sans-serif; }
+
+/* ---- 머리 ---- */
+.kind { text-align: center; font-size: 12pt; font-weight: 500; letter-spacing: 0.6em; color: rgba(0,0,0,0.7); margin: 0 0 2mm; }
+.titlebox { border: 1.6pt solid #000; outline: 0.5pt solid #000; outline-offset: 0.9mm; padding: 4mm 6mm; margin: 1mm 1mm 5mm; text-align: center; }
+.titlebox h1 { margin: 0; font-size: 21pt; font-weight: 900; line-height: 1.35; letter-spacing: -0.01em; }
+.headrow { display: flex; justify-content: space-between; align-items: flex-end; gap: 6mm; margin-bottom: 1mm; }
+table.meta { border-collapse: collapse; font-size: 12pt; font-weight: 500; line-height: 1.3; }
+table.meta td { padding: 0.8mm 3mm 0.8mm 0; border: none; }
+table.meta td.k { color: rgba(0,0,0,0.65); width: 16mm; }
+table.sign { border-collapse: collapse; font-family: "Noto Sans CJK KR", sans-serif; font-size: 12pt; font-weight: 500; text-align: center; line-height: 1.3; }
+table.sign th, table.sign td { border: 0.5pt solid #000; padding: 1mm 2mm; }
+table.sign th { background: rgba(0,0,0,0.08); font-weight: 500; width: 25mm; }
+table.sign td { height: 13mm; vertical-align: middle; }
+table.sign td.side { writing-mode: vertical-rl; width: 7mm; height: auto; background: rgba(0,0,0,0.08); letter-spacing: 0.4em; padding: 1mm 0; }
+table.sign .note::before { content: none; }
+table.sign .note { font-size: 10pt; }
+
+/* ---- 요약 ---- */
+.summary { border: 1pt solid #000; margin: 5mm 0 2mm; font-size: 12pt; font-weight: 500; line-height: 1.55; }
+.summary .cap { background: #000; color: #fff; padding: 1mm 4mm; letter-spacing: 0.4em; font-size: 12.5pt; font-weight: 700; }
+.summary ul { margin: 2mm 0; padding: 0 4mm 0 9mm; }
+.summary ul > li { margin: 1mm 0; }
+.summary ul > li::before { top: 0; }
+
+/* ---- 상태 변화 ---- */
+table.chg { width: 100%; border-collapse: collapse; margin: 4mm 0 0; font-size: 11pt; line-height: 1.3; border-top: 1.4pt solid #000; break-inside: avoid; }
+table.chg caption { caption-side: top; text-align: left; font-size: 12.5pt; font-weight: 700; padding-bottom: 1.2mm; }
+table.chg th { width: 22mm; border: 0.5pt solid #000; padding: 1.6mm 2mm; font-weight: 700; letter-spacing: 0.15em; vertical-align: middle; }
+table.chg td { border: 0.5pt solid #000; padding: 1.6mm 3mm; }
+table.chg tr.before th { background: rgba(0,0,0,0.08); color: rgba(0,0,0,0.75); }
+table.chg tr.before td { color: rgba(0,0,0,0.75); }
+table.chg tr.after th { background: #000; color: #fff; }
+table.chg tr.after td { background: rgba(0,0,0,0.06); font-weight: 500; }
+
+/* ---- □ 큰제목, 소제목 ---- */
+h2 { font-size: 15.5pt; font-weight: 700; line-height: 1.4; margin: 25pt 0 4pt; break-after: avoid; }
+h2::before { content: "□"; margin-right: 0.35em; }
+h3 { font-size: 13pt; font-weight: 700; line-height: 1.4; margin: 10pt 0 2pt; break-after: avoid; }
+
+/* ---- ○ / - 본문 ---- */
+ul { list-style: none; margin: 0; padding-left: 7mm; }
+ul > li { position: relative; margin: 5pt 0 0; }
+ul > li::before { content: "○"; position: absolute; left: -6.5mm; font-family: "Noto Sans CJK KR", sans-serif; top: 0.05em; font-size: 0.9em; }
+ul ul { padding-left: 6mm; }
+ul ul > li { margin-top: 1.5pt; }
+ul ul > li::before { content: "-"; left: -5mm; }
+ul ul ul > li::before { content: "·"; }
+p.note, .note { font-size: 12pt; font-weight: 500; line-height: 1.45; color: rgba(0,0,0,0.8); }
+p.note { margin: 5pt 0 0; padding-left: 1.4em; text-indent: -1.4em; }
+p.note::before { content: "※ "; }
+
+/* ---- 표 ---- */
+table.g { width: 100%; border-collapse: collapse; margin: 4pt 0 2pt; font-size: 10.5pt; line-height: 1.3; border-top: 1.4pt solid #000; }
+table.g tr { break-inside: avoid; }
+table.g th, table.g td { border: 0.5pt solid #000; padding: 1mm 2.2mm; text-align: left; vertical-align: top; }
+table.g th { background: rgba(0,0,0,0.08); font-weight: 700; }
+table.g td.c, table.g th.c { text-align: center; }
+.ok, .red { font-weight: 700; }
+.red { text-decoration: underline; text-decoration-thickness: 0.8pt; text-underline-offset: 0.6mm; }
+
+/* ---- 판정 ---- */
+.verdict { border: 1pt solid #000; background: rgba(0,0,0,0.06); padding: 4mm 5mm; break-inside: avoid; }
+.vrow { display: flex; align-items: center; gap: 6mm; }
+.verdict .v { font-family: "Noto Sans CJK KR", sans-serif; font-size: 15.5pt; font-weight: 900; }
+.mk { display: inline-block; border: 1.2pt solid #000; border-radius: 0.6mm; padding: 0 1.2mm; line-height: 1.25; margin-right: 2mm; font-weight: 900; }
+.btn { display: inline-block; border: 1pt solid #000; background: #fff; color: #000; padding: 1.2mm 4.5mm; border-radius: 1mm; font-size: 12pt; font-weight: 700; white-space: nowrap; text-decoration: underline; }
+.legend { margin-top: 3mm; font-size: 11pt; font-weight: 500; color: rgba(0,0,0,0.75); }
+.legend .mk { border-width: 0.7pt; padding: 0 0.7mm; margin-right: 0.8mm; font-size: 9.5pt; }
+.verdict h3 { margin-top: 8pt; }
+
+/* ---- 붙임(차트) ---- */
+.fig { break-before: page; }
+.fig h2 { margin-top: 0; }
+.fig.flow { break-before: auto; break-inside: avoid; margin-top: 25pt; }
+.fig h2::before { content: none; }
+.fig img { display: block; margin: 0 auto; max-width: 100%; }
+.fig .cap { margin-top: 3mm; font-size: 12pt; font-weight: 500; line-height: 1.45; }

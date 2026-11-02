@@ -1,0 +1,30 @@
+{
+  "form": "proposal",
+  "version": 1,
+  "title": "결재란 전결·집행 표기 정리",
+  "verdict": "ok",
+  "approval": {
+    "steps": [
+      {"role": "기안", "title": "담당", "name": "홍길동", "date": "2026-10-31"},
+      {"role": "결재", "title": "전결자", "name": "최민수", "mark": "전결"},
+      {"role": "결재", "title": "최종 결재자", "name": "김가상"}
+    ]
+  },
+  "sections": [
+    {
+      "title": "추진 개요",
+      "items": [
+        "전결자가 결재 칸에서 전결로 승인하고 최종 결재자가 main에 머지(집행)한 경우의 결재란 예시임",
+        "전결 칸에 전결과 승인 날짜, 마지막 칸은 사선, 집행 기록은 전결 칸 아래에 찍음"
+      ]
+    }
+  ],
+  "sampleReviews": [
+    {"name": "최민수", "verdict": "approve", "submittedAt": "2026-11-01T01:00:00Z"}
+  ],
+  "sampleMerge": {
+    "mergedAt": "2026-11-01T03:00:00Z",
+    "mergedBy": {"displayName": "김가상"},
+    "baseRefName": "main"
+  }
+}

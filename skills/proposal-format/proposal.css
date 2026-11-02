@@ -1,0 +1,11 @@
+/* 품의서. report.css와 approval-line/approval.css 위에 이 서식의 결만 덧붙인다. */
+.titlebox h1 { font-family: "Noto Sans CJK KR", sans-serif; }
+.headrow table.meta td { white-space: nowrap; }
+.pverdict {
+  margin: 6mm 0 0; font-family: "Noto Sans CJK KR", sans-serif;
+  font-size: 13pt; font-weight: 700;
+}
+p.note.report-link {
+  margin-top: 10mm; padding-top: 3mm;
+  border-top: 0.5pt solid rgba(0,0,0,0.3);
+}
