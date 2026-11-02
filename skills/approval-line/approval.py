@@ -1,9 +1,7 @@
 """Shared view for the approval forms (품의서, 결과보고서).
 
 head, 결재란, review matching, whose turn, and HTML/PDF output live here once.
-Rule words (roles, approval status, document number kinds, merge notes) come from rules.json,
-a copy of operating-rules-config.json. Change the original first, then sync the copy
-(tests/test_rules_sync.py fails while they differ).
+Rule words (roles, approval status, document number kinds, merge notes) come from rules.json.
 Approve and reject come from Origin pull request reviews, read with the origin CLI
 already configured in the environment. No token is read or stored.
 Nothing here sends a review or a merge.
@@ -28,9 +26,9 @@ DOC_KINDS = dict(RULES["docNumber"]["kinds"])
 STEP_KEYS = {"role", "title", "name", "date", "mark", "reviewer"}
 KST = timezone(timedelta(hours=9))
 
-# Warning kinds named in rules.json warnings (structural, simple, text) use the original's keys.
+# Warning kinds named in rules.json warnings (structural, simple, text) use the keys there.
 # Any structural warning shows '승인' as approvalStatus needs-check. Simple and
-# unclassified warnings leave the status alone. Kinds the original gives no text for keep main's wording here.
+# unclassified warnings leave the status alone. Kinds rules.json gives no text for keep their wording here.
 STRUCTURAL = frozenset(RULES["warnings"]["structural"])
 CODE_TEXTS = {
     "formRole": "이 서식의 결재선에는 {role} 칸을 두지 않습니다. 파일에 {count}칸이 있습니다.",
@@ -47,8 +45,7 @@ CODE_TEXTS = {
     "mergerSeat": "{name} 칸은 {where}인데 그 사람이 머지했습니다. 규칙은 마지막 칸의 사람이 머지합니다.",
 }
 WARNING_TEXTS = {**CODE_TEXTS, **RULES["warnings"]["text"]}
-# Merge notes the original does not have yet. They move to rules.json mergeNote once the original's map has them
-# (tests/test_rules_sync.py fails then). A merge into a COLLECT_BRANCH branch is 취합, not an approval.
+# Merge notes not in rules.json mergeNote yet. A merge into a COLLECT_BRANCH branch is 취합, not an approval.
 CODE_NOTES = {
     "execution": "집행: {who} {month}/{day}",
     "collect": "취합: {who} {month}/{day} ({branch})",
@@ -369,7 +366,7 @@ def order_warnings(steps, reviews, decisions):
 
     Only boxes whose latest review is approve are compared, by each box's earliest counted approve, not the latest
     review: a re-approve on the earlier box is not an inversion, a re-approve on the later box does not hide one
-    (operating-rules.md 1.1 '승인 순서')."""
+    (운영규칙 1.1 '승인 순서')."""
     approved = sorted(i for i, d in decisions.items() if d["verdict"] == "approve")
     first = {}
     for i, review in linked_reviews(steps, reviews):

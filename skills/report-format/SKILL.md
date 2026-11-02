@@ -112,7 +112,7 @@ python3 skills/report-format/template/make_report.py skills/report-format/templa
 
 ## 검사
 
-`verify(pdf)`가 쪽 수, 허용 서체(Noto Sans CJK KR, Noto Serif CJK KR, Gothic A1)만 쓰였는지(`disallowed_fonts`가 비어야 함), 쪽마다 채도(`max_chroma`가 0이어야 함)를 돌려줍니다. 저장소 전체 렌더 테스트는 `python3 -m pytest tests`입니다.
+`verify(pdf)`가 쪽 수, 허용 서체(Noto Sans CJK KR, Noto Serif CJK KR, Gothic A1)만 쓰였는지(`disallowed_fonts`가 비어야 함), 쪽마다 채도(`max_chroma`가 0이어야 함)를 돌려줍니다.
 
 ## 흔한 오류
 

@@ -1,6 +1,6 @@
 {
   "source": "operating-rules-config.json",
-  "basis": "이 파일은 결재 규칙 값의 사본입니다. 원본은 source가 가리키는 파일입니다. 값을 바꿀 때는 원본을 먼저 고치고, 이 사본을 원본에 맞춘 뒤 python3 -m pytest tests로 확인합니다. 이 파일만 고치지 않습니다. 키마다 원본 위치는 원본의 copies[\"skills/approval-line/rules.json\"].map에 있고, tests/test_rules_sync.py가 map을 따라 값을 비교해 다르면 실패합니다. map에 없는 값은 이 사본에 두지 않습니다. 원본의 line.firstIsDraft, line.maxSteps, onViolation, forms.proposal.reviewAllowed, jeongyeol.afterBoxes는 map에 없어 approval.py와 render_proposal.py 코드에 있고, 같은 테스트가 원본 값이 코드가 따르는 값과 같은지 확인합니다. 판정(✔/▲/✖)은 결재 규칙이 아니므로 여기 두지 않고 skills/report-format/template/make_report.py VERDICTS에 둡니다.",
+  "basis": "이 파일은 결재 규칙 값입니다. approval.py가 역할명, 결재 상태 단어, 문서번호 종류, 머지 기록 표기, 경고 분류와 문구를 여기서 읽습니다. line.firstIsDraft, line.maxSteps, onViolation, forms.proposal.reviewAllowed, jeongyeol.afterBoxes에 해당하는 규칙은 여기 두지 않고 approval.py와 render_proposal.py 코드에 있습니다. 판정(✔/▲/✖)은 결재 규칙이 아니므로 여기 두지 않고 skills/report-format/template/make_report.py VERDICTS에 둡니다.",
   "roles": {
     "draft": "기안",
     "review": "검토",

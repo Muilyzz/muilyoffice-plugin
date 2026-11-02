@@ -26,7 +26,7 @@ The operating rules applied to all documents are kept outside the plugin bundle.
 - Mandatory: approval line structure, document numbering, merge permission, release tagging
 - Optional: team name format, drafter display
 
-The approval line part of them is in `rules/approval-line.mdc` and `skills/approval-line/SKILL.md`.
+The approval line part of them is in `skills/approval-line/SKILL.md`.
 
 ## English
 
@@ -52,7 +52,7 @@ python3 skills/report-format/render_result.py skills/report-format/example_resul
 python3 skills/org-chart/render_org_chart.py skills/org-chart/example_organization.json out/org.pdf
 ```
 
-The approval procedure shared by the proposal and the result report is `skills/approval-line/SKILL.md`. Render tests: `python3 -m pytest tests`.
+The approval procedure shared by the proposal and the result report is `skills/approval-line/SKILL.md`.
 
 ## 한국어
 
@@ -72,7 +72,7 @@ python3 skills/report-format/template/make_report.py \
 
 품의서, 결과보고서, 조직도도 같은 방식으로 데이터 파일(JSON)에서 렌더합니다. PDF와 같은 폴더에 HTML도 생깁니다. 명령은 위 English 절과 같습니다.
 
-품의서·결과보고서가 함께 쓰는 결재 절차(기안·검토·결재)는 `skills/approval-line/SKILL.md`입니다. 렌더 테스트는 `python3 -m pytest tests`입니다.
+품의서·결과보고서가 함께 쓰는 결재 절차(기안·검토·결재)는 `skills/approval-line/SKILL.md`입니다.
 
 ## Cursor and Grok Bot
 
@@ -94,7 +94,6 @@ python3 skills/report-format/template/make_report.py \
 
 - No MCP server, no hooks, no `variables` in the manifest. The plugin needs no secret of its own.
 - `https://example.com/review` in the samples is a link printed in the document, not fetched.
-- `tests/README.md` (test setup only, not part of the plugin at run time) downloads the Gothic A1 font from `raw.githubusercontent.com`.
 
 ○ 외부로 나가는 호출은 `origin` CLI 하나입니다. 렌더할 때 `--pr N`을 준 경우에만 `origin pr view`로 리뷰·머지 기록을 읽고, 결재 PR을 열 때 에이전트가 `origin pr create`, `origin pr reviewer request`를 씁니다. 인증은 사용자가 이미 로그인해 둔 `origin` CLI의 것을 쓰고, 이 저장소의 코드는 토큰을 읽거나 저장하지 않습니다.
 ○ 그 밖의 프로그램(Chrome, poppler)은 이 컴퓨터 안에서만 돕니다. 규칙 파일에는 호출이 없습니다.

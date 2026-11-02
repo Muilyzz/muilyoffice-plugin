@@ -2,7 +2,7 @@
 """Render an organization JSON file ({members:[...]}) to a monochrome org chart (HTML and PDF).
 
 The tree follows reports_to. The table lists every member and the approval chain that
-follows approver upward. Same format as example_organization.json and data/README.md.
+follows approver upward. Same format as example_organization.json (fields in SKILL.md).
 
   python3 render_org_chart.py example_organization.json out.pdf   # also writes out.html
   python3 render_org_chart.py example_organization.json out.pdf --date 2026-10-31
@@ -18,7 +18,7 @@ OPTIONAL = {"assignment", "pending", "note"}
 PRESENT = ("team", "reports_to", "approver", "delegation", "spec")
 REQUIRED = ("id", "name", "kind", "role")
 FIELDS = set(REQUIRED) | set(PRESENT) | OPTIONAL
-# data/README.md: in a pending member a null field is 미정, not 직속 or 해당 없음.
+# In a pending member a null field is 미정, not 직속 or 해당 없음.
 UNDECIDED = "미정"
 KINDS = {"bot": "봇", "human": "사람"}
 ASSIGNMENTS = {"deliverable": "산출물", "common": "공통"}
