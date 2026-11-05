@@ -1,5 +1,5 @@
 {
-  "source": "operating-rules-config.json",
+  "source": "이 묶음의 규칙 원본",
   "basis": "이 파일은 결재 규칙 값입니다. approval.py가 역할명, 결재 상태 단어, 문서번호 종류, 머지 기록 표기, 경고 분류와 문구를 여기서 읽습니다. line.firstIsDraft, line.maxSteps, onViolation, forms.proposal.reviewAllowed, jeongyeol.afterBoxes에 해당하는 규칙은 여기 두지 않고 approval.py와 render_proposal.py 코드에 있습니다. 판정(✔/▲/✖)은 결재 규칙이 아니므로 여기 두지 않고 skills/report-format/template/make_report.py VERDICTS에 둡니다.",
   "roles": {
     "draft": "기안",
@@ -18,8 +18,9 @@
   "approvalStatus": {
     "in-progress": "진행",
     "rejected": "반려",
-    "approved": "승인",
-    "needs-check": "확인 필요"
+    "approved": "완료 대기",
+    "needs-check": "확인 필요",
+    "merged": "완료"
   },
   "docNumber": {
     "kinds": {
@@ -30,13 +31,13 @@
   },
   "mergeNote": {
     "pending": "merge 대기",
-    "merged": "{month}/{day} merge",
+    "merged": "{month}/{day} 완료",
     "merger": "머지: {who} {month}/{day}",
     "mergerUnknown": "미확인",
     "jeongyeolWho": "{name}({mark})"
   },
   "warnings": {
-    "draft": "▲ 초안, 최종 결재자(조직도 최상위) 확정 전 (최종 결재자 결정 B2는 구조 경고면 승인 대신 needs-check를 표시하고 경고를 문서에 찍는 것까지. 단어·structural·simple·text는 초안)",
+    "draft": "▲ 초안, 최종 결재자(조직도 최상위) 확정 전 (최종 결재자 결정은 구조 경고면 승인 대신 needs-check를 표시하고 경고를 문서에 찍는 것까지. 단어·structural·simple·text는 초안)",
     "structural": [
       "lastNotFinal",
       "noFinal",
@@ -56,5 +57,69 @@
       "drafterReview": "기안자({name})의 리뷰는 결재란에 찍지 않았습니다. 규칙은 기안자가 승인·반려하지 않습니다.",
       "orderInversion": "{later} 칸 승인({laterDate})이 앞 {earlier} 칸 승인({earlierDate})보다 이릅니다. 규칙은 앞 칸부터 승인합니다. 도장은 그대로 찍습니다."
     }
+  },
+  "draftForms": {
+    "proposal": {
+      "label": "품의서",
+      "docKind": "proposal",
+      "checksRequired": true,
+      "sections": [
+        { "key": "summary", "label": "요약", "required": true, "maxLength": 500 },
+        { "key": "changes", "label": "바뀐 것", "required": true, "maxLength": 8000 },
+        { "key": "reason", "label": "이유", "required": true, "maxLength": 4000 },
+        { "key": "facts", "label": "확인한 사실", "required": true, "maxLength": 4000, "linePrefix": ["✔"] },
+        { "key": "assumptions", "label": "추정·확인 필요", "required": false, "maxLength": 4000, "linePrefix": ["▲", "✖"] }
+      ]
+    },
+    "result_report": {
+      "label": "결과보고서",
+      "docKind": "report",
+      "checksRequired": true,
+      "sections": [
+        { "key": "summary", "label": "요약", "required": true, "maxLength": 500 },
+        { "key": "changes", "label": "바뀐 것", "required": true, "maxLength": 8000 },
+        { "key": "reason", "label": "이유", "required": true, "maxLength": 4000 },
+        { "key": "facts", "label": "확인한 사실", "required": true, "maxLength": 4000, "linePrefix": ["✔"] },
+        { "key": "assumptions", "label": "추정·확인 필요", "required": false, "maxLength": 4000, "linePrefix": ["▲", "✖"] }
+      ]
+    },
+    "review_report": {
+      "label": "검토보고서",
+      "docKind": "report",
+      "checksRequired": true,
+      "sections": [
+        { "key": "summary", "label": "요약", "required": true, "maxLength": 500 },
+        { "key": "changes", "label": "바뀐 것", "required": true, "maxLength": 8000 },
+        { "key": "reason", "label": "이유", "required": true, "maxLength": 4000 },
+        { "key": "facts", "label": "확인한 사실", "required": true, "maxLength": 4000, "linePrefix": ["✔"] },
+        { "key": "assumptions", "label": "추정·확인 필요", "required": false, "maxLength": 4000, "linePrefix": ["▲", "✖"] }
+      ]
+    },
+    "org_chart": {
+      "label": "조직도",
+      "draftable": false,
+      "checksRequired": true,
+      "sections": [
+        { "key": "summary", "label": "요약", "required": true, "maxLength": 500 },
+        { "key": "changes", "label": "바뀐 것", "required": true, "maxLength": 8000 },
+        { "key": "reason", "label": "이유", "required": true, "maxLength": 4000 },
+        { "key": "facts", "label": "확인한 사실", "required": true, "maxLength": 4000, "linePrefix": ["✔"] },
+        { "key": "assumptions", "label": "추정·확인 필요", "required": false, "maxLength": 4000, "linePrefix": ["▲", "✖"] }
+      ]
+    }
+  },
+  "draftChecks": {
+    "label": "전결 표시",
+    "formLabel": "서식",
+    "notice": "이 칸은 기안자가 적은 표시입니다. 조직도를 바꾸는 문서는 서버가 실제 바뀐 파일로 다시 판정하며, 스위치·앱 권한·운영 변수는 서버가 대조하지 않으므로 사람이 확인합니다.",
+    "valueLabels": { "yes": "예", "no": "아니오", "unknown": "모름(사람 판정)" },
+    "eligibility": { "key": "jeongyeol_eligible", "label": "전결 대상 여부" },
+    "exclusions": [
+      { "key": "excluded_org_chart", "label": "조직도 변경", "serverCheck": "org_chart_changed" },
+      { "key": "excluded_switch", "label": "스위치 변경", "serverCheck": null },
+      { "key": "excluded_app_permission", "label": "앱 권한 변경", "serverCheck": null },
+      { "key": "excluded_ops_variable", "label": "운영 변수 변경", "serverCheck": null }
+    ],
+    "assumptionSection": "assumptions"
   }
 }

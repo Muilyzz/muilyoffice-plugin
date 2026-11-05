@@ -1,11 +1,21 @@
 {
   "name": "muilyoffice-korean-groupware-documents",
   "displayName": "Korean groupware documents",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Monochrome Korean groupware documents for print: reports, proposals, and org charts, with an approval line read from Origin pull request reviews.",
   "author": {
     "name": "Muilyzz Corp."
   },
   "license": "MIT",
-  "keywords": ["korean", "report", "documents", "pdf", "approval"]
+  "keywords": ["korean", "report", "documents", "pdf", "approval"],
+  "variables": {
+    "type": "object",
+    "properties": {
+      "webAppUrl": {
+        "type": "string",
+        "title": "MuilyOffice web app address",
+        "description": "Optional. Public address of the separate MuilyOffice web app, as an https origin with no path or trailing slash: https://{host}. Connecting Origin starts at {webAppUrl}/api/origin/install/start. Leave empty if you do not use the web app."
+      }
+    }
+  }
 }

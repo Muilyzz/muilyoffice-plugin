@@ -2,7 +2,7 @@
 """Render an organization JSON file ({members:[...]}) to a monochrome org chart (HTML and PDF).
 
 The tree follows reports_to. The table lists every member and the approval chain that
-follows approver upward. Same format as example_organization.json (fields in SKILL.md).
+follows approver upward. Same format as example_organization.json and data/README.md.
 
   python3 render_org_chart.py example_organization.json out.pdf   # also writes out.html
   python3 render_org_chart.py example_organization.json out.pdf --date 2026-10-31
@@ -18,10 +18,13 @@ OPTIONAL = {"assignment", "pending", "note"}
 PRESENT = ("team", "reports_to", "approver", "delegation", "spec")
 REQUIRED = ("id", "name", "kind", "role")
 FIELDS = set(REQUIRED) | set(PRESENT) | OPTIONAL
-# In a pending member a null field is 미정, not 직속 or 해당 없음.
+# data/README.md: in a pending member a null field is 미정, not 직속 or 해당 없음.
 UNDECIDED = "미정"
 KINDS = {"bot": "봇", "human": "사람"}
 ASSIGNMENTS = {"deliverable": "산출물", "common": "공통"}
+# mm. PAGE is A4 landscape (297) inside report.css's 20 mm side margins. The CSS gets these as --page, --node, --gap,
+# --indent, so tree_width() and the browser lay out the same widths.
+PAGE, NODE, GAP, INDENT = 257, 33, 2, 8
 
 
 def fail(message):
@@ -106,10 +109,51 @@ def node_html(m):
             f'<div class="rl">{esc(m["role"])}</div><div class="tm">{esc(team)} · {KINDS[m["kind"]]}</div></div>')
 
 
-def branch_html(m, children):
+def branch_html(m, children, stacked):
     kids = children.get(m["id"], [])
-    inner = "".join(branch_html(k, children) for k in kids)
-    return f'<div class="branch">{node_html(m)}' + (f'<div class="kids">{inner}</div>' if kids else "") + "</div>"
+    inner = "".join(branch_html(k, children, stacked) for k in kids)
+    if not kids:
+        return f'<div class="branch">{node_html(m)}</div>'
+    if m["id"] in stacked:
+        return f'<div class="branch fold">{node_html(m)}<div class="stack">{inner}</div></div>'
+    return f'<div class="branch">{node_html(m)}<div class="row">{inner}</div></div>'
+
+
+def listed_width(m, children):
+    """mm. A box with its reports listed under it, each level indented."""
+    kids = children.get(m["id"], [])
+    return max(NODE, INDENT + max(listed_width(k, children) for k in kids)) if kids else NODE
+
+
+def tree_width(m, children, stacked):
+    """mm. Reports side by side (row) add up. A list (stack) starts half an indent left of its box and hangs right,
+    and the box stays centered under the line from above, so what hangs past the box counts on both sides."""
+    kids = children.get(m["id"], [])
+    if not kids:
+        return NODE
+    if m["id"] in stacked:
+        return 2 * listed_width(m, children) - INDENT - NODE
+    return max(NODE, sum(tree_width(k, children, stacked) + GAP for k in kids))
+
+
+def stacked_ids(root, children):
+    """Members whose reports are listed top to bottom instead of side by side. A tree wider than the page
+    is folded from its lowest level of managers up, a whole level at a time, until it fits."""
+    levels = []
+    todo = [(root, 0)]
+    while todo:
+        m, depth = todo.pop()
+        kids = children.get(m["id"], [])
+        if kids:
+            levels += [set() for _ in range(depth + 1 - len(levels))]
+            levels[depth].add(m["id"])
+        todo += [(k, depth + 1) for k in kids]
+    stacked = set()
+    for level in reversed(levels):
+        if tree_width(root, children, stacked) <= PAGE:
+            break
+        stacked |= level
+    return stacked
 
 
 def spec_text(spec):
@@ -138,7 +182,7 @@ def document_html(members, ids, title, date):
     children = {}
     for m in members:
         children.setdefault(m.get("reports_to"), []).append(m)
-    tree = "".join(branch_html(r, children) for r in children.get(None, []))
+    tree = "".join(branch_html(r, children, stacked_ids(r, children)) for r in children.get(None, []))
     bots = sum(m["kind"] == "bot" for m in members)
     pending = sum(bool(m.get("pending")) for m in members)
     meta = (f'<tr><td class="k">기준일</td><td>{esc(date)}</td></tr>'
@@ -151,7 +195,8 @@ def document_html(members, ids, title, date):
         '<p class="note">이중선 상자는 사람, 단선 상자는 봇입니다. 선은 보고(reports_to)를 따릅니다. ▲는 미정이거나 잠정값인 항목이 있는 구성원입니다.</p>'
         f'<h2 class="list">구성원</h2>{members_table(members, ids)}'
     )
-    css = CSS.replace("@@HEADER@@", title) + open(os.path.join(HERE, "org_chart.css"), encoding="utf-8").read()
+    css = (CSS.replace("@@HEADER@@", title) + open(os.path.join(HERE, "org_chart.css"), encoding="utf-8").read()
+           + f".org {{ --page: {PAGE}mm; --node: {NODE}mm; --gap: {GAP}mm; --indent: {INDENT}mm; }}")
     return f'<!doctype html><html lang="ko"><head><meta charset="utf-8"><style>{css}</style></head><body>{body}</body></html>'
 
 

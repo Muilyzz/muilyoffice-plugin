@@ -1,16 +1,28 @@
-/* 조직도. report.css 위에 가로 A4와 나무 모양 선만 덧붙인다. */
+/* 조직도. report.css 위에 가로 A4와 나무 모양 선만 덧붙인다.
+   --page, --node, --gap, --indent(mm)는 render_org_chart.py가 넣는다. 줄 폭 계산(tree_width)과 같은 값이다. */
 @page { size: A4 landscape; }
-.org { margin: 6mm 0 2mm; font-family: "Noto Sans CJK KR", sans-serif; }
-.branch { display: flex; flex-direction: column; align-items: center; flex: 1 1 0; position: relative; }
-.kids { display: flex; justify-content: center; align-items: flex-start; width: 100%; position: relative; padding-top: 5mm; }
-.kids::before { content: ""; position: absolute; top: 0; left: 50%; height: 5mm; border-left: 0.8pt solid #000; }
-.kids > .branch { padding: 5mm 1mm 0; }
-.kids > .branch::before { content: ""; position: absolute; top: 0; left: 0; right: 0; border-top: 0.8pt solid #000; }
-.kids > .branch:first-child::before { left: 50%; }
-.kids > .branch:last-child::before { right: 50%; }
-.kids > .branch:only-child::before { content: none; }
-.kids > .branch::after { content: ""; position: absolute; top: 0; left: 50%; height: 5mm; border-left: 0.8pt solid #000; }
-.node { border: 0.8pt solid #000; background: #fff; padding: 1.5mm 2mm; text-align: center; min-width: 30mm; max-width: 44mm; line-height: 1.3; }
+.org { width: var(--page); margin: 6mm 0 2mm; font-family: "Noto Sans CJK KR", sans-serif; }
+.branch { display: flex; flex-direction: column; align-items: center; position: relative; }
+/* row: 보고하는 사람을 옆으로 나란히 */
+.row { display: flex; justify-content: center; align-items: flex-start; width: 100%; position: relative; padding-top: 5mm; }
+.row::before { content: ""; position: absolute; top: 0; left: 50%; height: 5mm; border-left: 0.8pt solid #000; }
+.row > .branch { flex: 1 1 0; padding: 5mm calc(var(--gap) / 2) 0; }
+.row > .branch::before { content: ""; position: absolute; top: 0; left: 0; right: 0; border-top: 0.8pt solid #000; }
+.row > .branch:first-child::before { left: 50%; }
+.row > .branch:last-child::before { right: 50%; }
+.row > .branch:only-child::before { content: none; }
+.row > .branch::after { content: ""; position: absolute; top: 0; left: 50%; height: 5mm; border-left: 0.8pt solid #000; }
+/* stack: 한 줄에 다 들어가지 않으면 상자 밑에 들여 써서 위에서 아래로. 세로선은 위 상자의 왼쪽 안쪽에서 내려온다.
+   목록 맨 위 상자(fold)는 가운데에 두고 목록은 그 상자 왼쪽 끝보다 들여쓰기 반만큼 앞에서 오른쪽으로 펼친다. */
+.org > .fold, .row > .fold { display: grid; grid-template-columns: 1fr var(--node) 1fr; }
+.org > .fold > .node, .row > .fold > .node { grid-column: 2; }
+.org > .fold > .stack, .row > .fold > .stack { grid-column: 2 / 4; margin-left: calc(var(--indent) * -0.5); }
+.stack { display: flex; flex-direction: column; align-items: flex-start; padding-left: var(--indent); }
+.stack > .branch { align-items: flex-start; padding-top: 2.5mm; }
+.stack > .branch::before { content: ""; position: absolute; top: 0; bottom: 0; left: calc(var(--indent) * -0.25); border-left: 0.8pt solid #000; }
+.stack > .branch:last-child::before { bottom: auto; height: 8mm; }
+.stack > .branch::after { content: ""; position: absolute; top: 8mm; left: calc(var(--indent) * -0.25); width: calc(var(--indent) * 0.25); border-top: 0.8pt solid #000; }
+.node { border: 0.8pt solid #000; background: #fff; padding: 1.5mm 2mm; text-align: center; width: var(--node); line-height: 1.3; break-inside: avoid; }
 .node.human { border: 2.4pt double #000; }
 .node .nm { font-size: 11.5pt; font-weight: 700; }
 .node .rl { font-size: 9pt; font-weight: 400; margin-top: 0.6mm; }

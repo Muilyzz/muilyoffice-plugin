@@ -42,7 +42,7 @@ description: >
 | `verdict` | 판정(선택). `ok` ✔ 머지 가능, `warn` ▲ 확인 필요, `hold` ✖ 보류 |
 | `prUrl` | 관련근거 링크(선택). 없고 `--pr`를 주면 Origin PR 주소를 씁니다. |
 
-- 결재 상태(`진행`, `반려`, `승인`)는 파일에 적지 않습니다. 렌더가 리뷰에서 계산해 머리의 `상태` 줄에 찍습니다.
+- 결재 상태(`진행`, `반려`, `완료`, `확인 필요`)는 파일에 적지 않습니다. 렌더가 리뷰에서 계산해 머리의 `상태` 줄에 찍습니다.
 - 판정(`verdict`)은 기안자가 적는 의견이고 결재 상태와 다른 필드입니다. 판정 기호와 문구는 결과보고서와 같은 `make_report.py`의 `VERDICTS`를 씁니다.
 - 문서번호는 파일에 적지 않습니다. 렌더할 때 PR 번호로 `품의-YYYY-NNNN`을 찍습니다. 같은 PR의 결과보고서는 `보고-YYYY-NNNN`입니다.
 - 같은 PR에 품의서가 둘 이상이면 문서번호는 같고 파일 이름 뒤의 짧은 제목으로 구분합니다(`proposal-서식도입.json`, `proposal-조직도.json`). 파일 이름에는 PR 번호를 넣지 않습니다.
@@ -65,9 +65,9 @@ python3 skills/proposal-format/render_proposal.py proposal.json out/proposal.pdf
 - HTML: 같은 폴더의 `out/proposal.html`
 - 터미널에 한 줄 JSON: `docNumber`, 결재 상태 `status`, 현재 차례 `turn`, 칸별 도장 `boxes`, 결재 규칙 경고 `warnings`
 
-머리는 문서번호·기안자·기안일·상태·관련근거 표와, 그 오른쪽의 결재란(담당 기안 / 최종 결재자 결재)입니다. 전결 없이 마지막 칸의 최종 결재자가 승인하고 main에 머지하면 마지막 칸 아래 `10/31 merge`입니다. 결재 칸 하나가 전결(`mark: 전결`)로 승인하고 최종 결재자가 main에 머지하면 마지막 칸은 사선이고, 전결 칸 아래 `집행: 이름 10/31`입니다. `stage/*`로의 중간 머지는 결재란 밖에 `취합: …`으로 적습니다. 규칙은 `skills/approval-line/SKILL.md`의 "머지 기록"입니다.
+머리는 문서번호·기안자·기안일·상태·관련근거 표와, 그 오른쪽의 결재란(담당 기안 / 최종 결재자 결재)입니다. 전결 없이 마지막 칸의 최종 결재자가 승인하고 main에 머지하면 마지막 칸 아래 `10/31 merge`입니다. 결재 칸 하나가 전결(`mark: 전결`)로 승인하고 최종 결재자가 main에 머지하면 마지막 칸은 사선이고, 전결 칸 아래 `머지: 이름(전결)`입니다. 이름은 전결한 사람입니다. `stage/*`로의 중간 머지는 결재란 밖에 `취합: …`으로 적습니다. 규칙은 `skills/approval-line/SKILL.md`의 "머지 기록"입니다.
 
-전결·집행 예시와 전결 없는 머지 예시: `example_proposal_jeongyeol.json`, `example_proposal_merge.json`. 두 예시의 `sampleMerge`는 Origin의 `mergedAt`·`mergedBy`·`baseRefName`을 대신하는 예시용 값이고 실제 파일에는 넣지 않습니다.
+전결 머지 예시와 전결 없는 머지 예시: `example_proposal_jeongyeol.json`, `example_proposal_merge.json`. 두 예시의 `sampleMerge`는 Origin의 `mergedAt`·`mergedBy`·`baseRefName`을 대신하는 예시용 값이고 실제 파일에는 넣지 않습니다.
 
 ## 흔한 오류
 

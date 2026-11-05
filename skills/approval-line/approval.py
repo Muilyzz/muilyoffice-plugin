@@ -1,12 +1,14 @@
 """Shared view for the approval forms (품의서, 결과보고서).
 
 head, 결재란, review matching, whose turn, and HTML/PDF output live here once.
-Rule words (roles, approval status, document number kinds, merge notes) come from rules.json.
+Rule words (roles, approval status, document number kinds, merge notes) come from rules.json,
+kept to the same content as this bundle's rule original. Change the original first, then sync the copy
+(the check fails while they differ).
 Approve and reject come from Origin pull request reviews, read with the origin CLI
 already configured in the environment. No token is read or stored.
 Nothing here sends a review or a merge.
 """
-import argparse, html, json, os, subprocess, sys
+import argparse, html, json, os, re, subprocess, sys
 from datetime import datetime, timedelta, timezone
 
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -26,9 +28,9 @@ DOC_KINDS = dict(RULES["docNumber"]["kinds"])
 STEP_KEYS = {"role", "title", "name", "date", "mark", "reviewer"}
 KST = timezone(timedelta(hours=9))
 
-# Warning kinds named in rules.json warnings (structural, simple, text) use the keys there.
+# Warning kinds named in rules.json warnings (structural, simple, text) use the original's keys.
 # Any structural warning shows '승인' as approvalStatus needs-check. Simple and
-# unclassified warnings leave the status alone. Kinds rules.json gives no text for keep their wording here.
+# unclassified warnings leave the status alone. Kinds the original gives no text for keep main's wording here.
 STRUCTURAL = frozenset(RULES["warnings"]["structural"])
 CODE_TEXTS = {
     "formRole": "이 서식의 결재선에는 {role} 칸을 두지 않습니다. 파일에 {count}칸이 있습니다.",
@@ -43,14 +45,38 @@ CODE_TEXTS = {
     "mergerOutside": "머지한 사람({who})이 결재선에 없습니다. 규칙은 마지막 칸의 사람이 머지합니다.",
     "mergerUnread": "머지한 사람을 Origin 기록(mergedBy)에서 읽지 못했습니다.",
     "mergerSeat": "{name} 칸은 {where}인데 그 사람이 머지했습니다. 규칙은 마지막 칸의 사람이 머지합니다.",
+    "baseUnknown": "머지한 브랜치({branch})가 기본 브랜치인지 몰라 main에 합쳐졌는지 판단하지 못했습니다.",
 }
 WARNING_TEXTS = {**CODE_TEXTS, **RULES["warnings"]["text"]}
-# Merge notes not in rules.json mergeNote yet. A merge into a COLLECT_BRANCH branch is 취합, not an approval.
+# Merge notes the original does not have yet. They move to rules.json mergeNote once the original includes them
+# (the check fails then). A merge into a COLLECT_BRANCH branch is 취합, not an approval.
+# The 전결 main merge note is not here: it is the original's merger prefix and jeongyeolWho, with no date.
 CODE_NOTES = {
-    "execution": "집행: {who} {month}/{day}",
     "collect": "취합: {who} {month}/{day} ({branch})",
 }
 COLLECT_BRANCH = "stage/"
+# Same shape and reserved names as the server's collect-branch check. Lowercase only.
+MEMBER_ID_BRANCH = re.compile(r"^[a-z0-9][a-z0-9-]{0,63}$")
+RESERVED_COLLECT_BRANCHES = frozenset({"main", "master", "head", "stage", "cursor"})
+
+
+def is_collect_branch(name, default_branch=None):
+    """A merge base is 취합 when it starts with stage/, or when it has a member id shape, is not a reserved name,
+    and is known not to be the default branch. With no default branch, it is not 취합: base_unknown() keeps it 완료 대기."""
+    if not isinstance(name, str):
+        return False
+    if name.startswith(COLLECT_BRANCH):
+        return True
+    if not isinstance(default_branch, str) or not default_branch:
+        return False
+    return (MEMBER_ID_BRANCH.match(name) is not None and name.lower() not in RESERVED_COLLECT_BRANCHES
+            and name.lower() != default_branch.lower())
+
+
+def base_unknown(name, default_branch=None):
+    """An id-shaped base that is not a reserved name, with no default branch to compare: main or 취합 cannot be told."""
+    return (isinstance(name, str) and (not isinstance(default_branch, str) or not default_branch)
+            and MEMBER_ID_BRANCH.match(name) is not None and name.lower() not in RESERVED_COLLECT_BRANCHES)
 
 
 class Finding(str):
@@ -116,10 +142,10 @@ def check_line(approval):
 
 
 def line_warnings(steps, roles=ROLES):
-    """결재 규칙(운영규칙 1.1)과 서식별 칸(roles) 위반 문구. 렌더는 막지 않는다. 위반 점검 자체는 품질 검사 몫이다.
-    role이 없는 결재선은 이 규칙으로 보지 않는다."""
+    """결재 규칙과 서식별 칸(roles) 위반 문구. 렌더는 막지 않는다. 위반 점검 자체는 품질 검사 몫이다.
+    role이 없는 결재선은 결재 칸이 없으므로 noFinal만 낸다. 역할별 칸 규칙은 보지 않는다."""
     if not any("role" in step for step in steps):
-        return []
+        return [warn("noFinal")]
     kinds = [step["role"] for step in steps]
     out = [warn("formRole", role=role, count=kinds.count(role)) for role in ROLES if role in kinds and role not in roles]
     reviews = kinds.count(REVIEW)
@@ -245,6 +271,7 @@ def slashed_indexes(steps):
 
 MERGER_NOTE = RULES["mergeNote"]["merger"]
 MERGER_UNKNOWN = RULES["mergeNote"]["mergerUnknown"]
+JEONGYEOL_MERGE = MERGER_NOTE[:MERGER_NOTE.index("{who}")] + RULES["mergeNote"]["jeongyeolWho"]
 
 
 def merge_record(steps, merge):
@@ -254,10 +281,12 @@ def merge_record(steps, merge):
     merge. Merging into main is the last box's person's.
     Not merged: 'merge 대기' under the deciding box.
     Merged by the last box's person with no 전결: '10/31 merge' under that box.
-    Merged by the last box's person when there is 전결: '집행: 이름 10/31' under the 전결 box.
+    Merged by the last box's person when there is 전결: '머지: 전결자(전결)', no date, under the 전결 box. The name is
+    the 전결 box's person, not the merger.
     Merged by another slashed box's person: '머지: 이름 10/31' under the 전결 box (a slashed box shows no text), warning.
-    Merged into a stage/* branch: '취합: 이름 10/31 (stage/…)' with index None, drawn outside the 결재란.
+    Merged into a collect branch (is_collect_branch): '취합: 이름 10/31 (stage/…)' with index None, drawn outside the 결재란.
     Anyone else, or no mergedBy: '머지: 이름 10/31' under that person's box (or the deciding box), with a warning.
+    An id-shaped base with no default branch (base_unknown): the note as above, plus baseUnknown and a warning.
     """
     merge = merge if isinstance(merge, dict) else {}
     cut = jeon_index(steps)
@@ -269,22 +298,27 @@ def merge_record(steps, merge):
     keys = set(actor_keys(merged_by))
     found = next((i for i, step in enumerate(steps) if keys & set(step_keys(step))), None)
     shown = (actor_keys(merged_by) or [MERGER_UNKNOWN])[0] if found is None else steps[found]["name"]
-    if isinstance(base, str) and base.startswith(COLLECT_BRANCH):
+    if is_collect_branch(base, merge.get("defaultBranch")):
         return {"index": None, "text": CODE_NOTES["collect"].format(who=shown, month=month, day=day, branch=base),
                 "by": shown, "warnings": []}
+    slashed = cut is not None and found is not None and found > cut
     if found is None:
         warning = warn("mergerOutside", who=shown) if keys else warn("mergerUnread")
-        return {"index": decide, "text": MERGER_NOTE.format(who=shown, month=month, day=day), "by": shown,
-                "warnings": [warning]}
-    if found == decide and cut is None:
-        return {"index": found, "text": merge_note(merged_at), "by": shown, "warnings": []}
-    slashed = cut is not None and found > cut
-    if slashed and found == len(steps) - 1:
-        return {"index": cut, "text": CODE_NOTES["execution"].format(who=shown, month=month, day=day), "by": shown,
-                "warnings": []}
-    where = "전결 칸" if found == cut else "사선 칸" if slashed else "마지막 칸이 아닌 칸"
-    return {"index": cut if slashed else found, "text": MERGER_NOTE.format(who=shown, month=month, day=day),
-            "by": shown, "warnings": [warn("mergerSeat", name=shown, where=where)]}
+        record = {"index": decide, "text": MERGER_NOTE.format(who=shown, month=month, day=day), "by": shown,
+                  "warnings": [warning]}
+    elif found == decide and cut is None:
+        record = {"index": found, "text": merge_note(merged_at), "by": shown, "warnings": []}
+    elif slashed and found == len(steps) - 1:
+        record = {"index": cut, "text": JEONGYEOL_MERGE.format(name=steps[cut]["name"], mark=steps[cut]["mark"]),
+                  "by": shown, "warnings": []}
+    else:
+        where = "전결 칸" if found == cut else "사선 칸" if slashed else "마지막 칸이 아닌 칸"
+        record = {"index": cut if slashed else found, "text": MERGER_NOTE.format(who=shown, month=month, day=day),
+                  "by": shown, "warnings": [warn("mergerSeat", name=shown, where=where)]}
+    if base_unknown(base, merge.get("defaultBranch")):
+        record["baseUnknown"] = True
+        record["warnings"].append(warn("baseUnknown", branch=base))
+    return record
 
 
 def check_sample_merge(doc):
@@ -366,7 +400,7 @@ def order_warnings(steps, reviews, decisions):
 
     Only boxes whose latest review is approve are compared, by each box's earliest counted approve, not the latest
     review: a re-approve on the earlier box is not an inversion, a re-approve on the later box does not hide one
-    (운영규칙 1.1 '승인 순서')."""
+    ('승인 순서')."""
     approved = sorted(i for i, d in decisions.items() if d["verdict"] == "approve")
     first = {}
     for i, review in linked_reviews(steps, reviews):
@@ -396,9 +430,16 @@ def whose_turn(steps, decisions):
             return {"state": "rejected", "name": drafter["name"], "index": 0}
     # 승인: at least one 결재 box, and every box but 기안 (and the slashed ones) approved.
     # A line with no role on any box has no 결재 box to count.
-    if any("role" in step for step in steps) and not any(step["role"] == FINAL for step in steps):
+    if not any("role" in step for step in steps) or not any(step["role"] == FINAL for step in steps):
         return {"state": "needs-check", "name": None, "index": None}
     return {"state": "approved", "name": None, "index": None}
+
+
+def merged_into_main(merge):
+    """merge_record() leaves by None only when there is no mergedAt, and index None only for 취합 into a collect
+    branch. baseUnknown means main or 취합 cannot be told, so it is not counted. Anything else is a merge into main,
+    whoever merged."""
+    return bool(merge) and merge["by"] is not None and merge["index"] is not None and not merge.get("baseUnknown")
 
 
 def build_view(steps, reviews, roles=ROLES, merge=None):
@@ -408,6 +449,8 @@ def build_view(steps, reviews, roles=ROLES, merge=None):
                 + (merge["warnings"] if merge else []))
     turn = whose_turn(steps, decisions)
     state = "needs-check" if turn["state"] == "approved" and structure_warnings(warnings) else turn["state"]
+    if state == "approved" and merged_into_main(merge):
+        state = "merged"
     slashed = slashed_indexes(steps)
     boxes = []
     for i, step in enumerate(steps):

@@ -7,7 +7,7 @@
   "approval": {
     "steps": [
       {"role": "기안", "title": "담당", "name": "홍길동", "date": "2026-10-31"},
-      {"role": "검토", "title": "검토자", "name": "이준호"},
+      {"role": "검토", "title": "검토자", "name": "이가상"},
       {"role": "결재", "title": "최종 결재자", "name": "김가상"}
     ]
   },
@@ -37,7 +37,7 @@
   },
   "changes": {
     "items": ["공용 일정표에 회의실 3곳을 등록함", "예약 양식을 하나로 맞춤", "취소 방법을 일정표로 옮김"],
-    "notes": ["외부 손님용 회의실 연결은 후속 작업임."]
+    "notes": ["외부 손님용 회의실 연결은 후속 작업임.", "이 예시의 사람 이름은 가상입니다."]
   },
   "verification": {
     "table": {
@@ -56,6 +56,6 @@
     "items": ["차단 사유 없음."]
   },
   "sampleReviews": [
-    {"name": "이준호", "verdict": "approve", "submittedAt": "2026-11-01T01:00:00Z"}
+    {"name": "이가상", "verdict": "approve", "submittedAt": "2026-11-01T01:00:00Z"}
   ]
 }
