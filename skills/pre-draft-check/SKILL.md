@@ -165,7 +165,7 @@ python3 ../check.py --body body.md --title "[품의-2026-0012] 빈 이름 처리
 | `forged_block_line` | 본문 첫 10줄에 문서번호·기안 줄이나 블록 표지가 있음 | 그 줄을 지웁니다 |
 | `title_too_long` · `body_too_long` | 제목·본문이 한도보다 김 | `limit` 안으로 줄입니다 |
 | `drafter_not_in_org_chart` | `drafter` 이름이 조직도에 없음 | 조직도의 이름과 똑같이 씁니다 |
-| `drafter_not_key_member` | 봇별 키의 주인과 `drafter`가 다름 | 자기 키와 자기 이름을 씁니다 |
+| `drafter_not_key_member` | 요청의 `drafter` 이름이, 키가 가리키는 조직도 구성원과 다름 | 그 구성원의 조직도 이름을 씁니다. 키는 누구인지 가리킬 뿐이고, 본문에 다른 이름을 적어도 작성자가 되지 않습니다 |
 | `member_ambiguous` | 같은 이름이 조직도에 여럿 | 조직도 담당자에게 알립니다 |
 | `kind_not_in_rules` | `kind`가 문서종류 키 목록에 없음 | `rules.json`의 키를 씁니다 |
 | `already_exists` | 같은 기안자가 같은 종류·제목·본문으로 이미 기안함 | 열린 초안 PR이 있으면 그것을 씁니다. 닫힌 기안을 다시 올리려면 제목이나 본문을 바꿔 부릅니다 |
